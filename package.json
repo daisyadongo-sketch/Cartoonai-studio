@@ -1,1 +1,16 @@
 
+{
+  "name": "cartoonai-studio",
+  "version": "1.0.0",
+  "description": "AI Cartoon Image Generator",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "helmet": "^8.1.0",
+    "express-rate-limit": "^7.5.0",
+    "openai": "^4.104.0"
+  }
+}

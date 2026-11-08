@@ -1,38 +1,27 @@
 
-const form = document.getElementById("generator-form");
 const promptInput = document.getElementById("prompt");
 const styleInput = document.getElementById("style");
-const aspectInput = document.getElementById("aspect-ratio");
+const ratioInput = document.getElementById("aspectRatio");
+const generateButton = document.getElementById("generateBtn");
+const statusText = document.getElementById("status");
+const resultImage = document.getElementById("resultImage");
+const downloadButton = document.getElementById("downloadBtn");
 
-const generateButton = document.getElementById("generate-button");
-const voiceButton = document.getElementById("voice-button");
-const voiceStatus = document.getElementById("voice-status");
-
-const message = document.getElementById("message");
-const emptyState = document.getElementById("empty-state");
-const resultImage = document.getElementById("result-image");
-const downloadButton = document.getElementById("download-button");
-
-document.getElementById("year").textContent =
-  new Date().getFullYear();
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
+generateButton.addEventListener("click", async () => {
   const prompt = promptInput.value.trim();
 
   if (!prompt) {
-    message.textContent = "Please describe your cartoon.";
+    statusText.textContent = "Please describe your cartoon first.";
+    promptInput.focus();
     return;
   }
 
   generateButton.disabled = true;
   generateButton.textContent = "Creating your cartoon...";
-  message.textContent = "Please wait while AI creates your image.";
+  statusText.textContent = "AI is creating your cartoon. Please wait...";
 
-  downloadButton.hidden = true;
-  resultImage.hidden = true;
-  emptyState.hidden = false;
+  resultImage.style.display = "none";
+  downloadButton.style.display = "none";
 
   try {
     const response = await fetch("/api/generate-image", {
@@ -41,9 +30,9 @@ form.addEventListener("submit", async (event) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        prompt,
+        prompt: prompt,
         style: styleInput.value,
-        aspectRatio: aspectInput.value
+        aspectRatio: ratioInput.value
       })
     });
 
@@ -54,95 +43,26 @@ form.addEventListener("submit", async (event) => {
     }
 
     if (!data.image) {
-      throw new Error("The server did not return an image.");
+      throw new Error("No image was returned by the server.");
     }
 
-    const imageUrl = data.image.startsWith("data:")
-      ? data.image
-      : `data:image/png;base64,${data.image}`;
-
     resultImage.onload = () => {
-      emptyState.hidden = true;
-      resultImage.hidden = false;
-      downloadButton.href = imageUrl;
-      downloadButton.hidden = false;
-      message.textContent = "Your cartoon is ready!";
+      resultImage.style.display = "block";
+      downloadButton.href = data.image;
+      downloadButton.style.display = "inline-block";
+      statusText.textContent = "Your cartoon is ready!";
     };
 
     resultImage.onerror = () => {
-      message.textContent = "Could not display the generated image.";
+      statusText.textContent = "The generated image could not be displayed.";
     };
 
-    resultImage.src = imageUrl;
+    resultImage.src = data.image;
 
   } catch (error) {
-    message.textContent = error.message || "Something went wrong.";
+    statusText.textContent = "Error: " + error.message;
   } finally {
     generateButton.disabled = false;
-    generateButton.textContent = "✨ Generate cartoon";
+    generateButton.textContent = "✨ Generate Cartoon";
   }
 });
-
-const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition;
-
-if (SpeechRecognition) {
-  const recognition = new SpeechRecognition();
-
-  recognition.lang = "en-US";
-  recognition.continuous = false;
-  recognition.interimResults = false;
-
-  voiceButton.addEventListener("click", () => {
-    try {
-      voiceStatus.textContent = "Listening... Speak now.";
-      recognition.start();
-    } catch (error) {
-      voiceStatus.textContent = "Please wait and try again.";
-    }
-  });
-
-  recognition.onresult = (event) => {
-    const spokenText = event.results[0][0].transcript;
-
-    promptInput.value = promptInput.value
-      ? promptInput.value + " " + spokenText
-      : spokenText;
-
-    voiceStatus.textContent = "Your speech has been added.";
-  };
-
-  recognition.onerror = (event) => {
-    voiceStatus.textContent =
-      event.error === "not-allowed"
-        ? "Please allow microphone access in your browser."
-        : "Voice input failed. Please try again.";
-  };
-
-  recognition.onend = () => {
-    if (voiceStatus.textContent === "Listening... Speak now.") {
-      voiceStatus.textContent = "Listening stopped.";
-    }
-  };
-
-} else {
-  voiceButton.disabled = true;
-  voiceStatus.textContent = "Voice input is not supported in this browser.";
-}
-
-async function checkServer() {
-  try {
-    const response = await fetch("/api/health");
-
-    if (!response.ok) {
-      throw new Error("Server unavailable");
-    }
-
-    console.log("CartoonAI Studio server connected.");
-  } catch (error) {
-    console.error("Backend connection error:", error);
-  }
-}
-
-checkServer();
-

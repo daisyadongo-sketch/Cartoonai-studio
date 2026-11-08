@@ -1,4 +1,3 @@
-
 const promptInput = document.getElementById("prompt");
 const styleInput = document.getElementById("style");
 const ratioInput = document.getElementById("aspectRatio");

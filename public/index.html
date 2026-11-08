@@ -1,1 +1,74 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101024">
+  <title>CartoonAI Studio</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="header">
+    <h1>🎨 CartoonAI Studio</h1>
+    <p>Turn your imagination into beautiful cartoons with AI.</p>
+  </header>
+
+  <main class="container">
+    <section class="generator">
+      <h2>Create Your Cartoon</h2>
+
+      <label for="prompt">Describe your cartoon</label>
+      <textarea
+        id="prompt"
+        placeholder="Example: A cute lion wearing sunglasses in a colourful jungle..."
+        rows="5"
+      ></textarea>
+
+      <label for="style">Choose a cartoon style</label>
+      <select id="style">
+        <option>3D cartoon animation</option>
+        <option>Anime</option>
+        <option>Disney-inspired 3D animation</option>
+        <option>Comic book illustration</option>
+        <option>Watercolour cartoon</option>
+        <option>Pixar-like 3D cartoon</option>
+      </select>
+
+      <label for="aspectRatio">Image shape</label>
+      <select id="aspectRatio">
+        <option value="square">Square</option>
+        <option value="landscape">Landscape</option>
+        <option value="portrait">Portrait</option>
+      </select>
+
+      <button id="generateBtn" type="button">
+        ✨ Generate Cartoon
+      </button>
+
+      <p id="status" role="status"></p>
+
+      <div id="resultContainer">
+        <img id="resultImage" alt="Your generated cartoon">
+        <a id="downloadBtn" download="cartoon.png">
+          Download Cartoon
+        </a>
+      </div>
+    </section>
+
+    <section class="video-section">
+      <h2>AI Cartoon Animation</h2>
+      <p>Video generation is coming soon.</p>
+      <button type="button" disabled>
+        Video Generation Coming Soon
+      </button>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 CartoonAI Studio. All rights reserved.</p>
+  </footer>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
